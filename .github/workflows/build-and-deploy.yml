@@ -38,5 +38,5 @@ jobs:
 
     steps:
       - name: Fake Deployment
-        run:
-          echo "The image to deploy is: docker.pkg.github.com/${{ github.repository }}/to_do_list:${{ github.ref }}"
+        run:echo The image to deploy is: docker.pkg.github.com/${{ github.repository }}/to_do_list:${{ github.ref }}
+
