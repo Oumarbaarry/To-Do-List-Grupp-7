@@ -37,7 +37,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Login to GitHub Packages Docker registry
-        run: echo "${{ secrets.Docker_Pat }}" | docker login docker.pkg.github.com -u Oumarbaarry --password-stdin
+        run: echo "${{ secrets.DOCKER_PAT }}" | docker login docker.pkg.github.com -u Oumarbaarry --password-stdin
 
       - name: Build Docker image
         run: |
