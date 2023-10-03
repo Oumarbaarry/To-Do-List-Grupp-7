@@ -1,3 +1,2 @@
-Första ändrigen
-Andra ändringen
+Första ändrigen i README.md
 
