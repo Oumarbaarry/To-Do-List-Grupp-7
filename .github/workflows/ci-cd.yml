@@ -1,36 +1,61 @@
-# This is a basic workflow to help you get started with Actions
+name: CI/CD Pipeline
 
-name: CI
+on: [push]
 
-# Controls when the workflow will run
-on:
-  # Triggers the workflow on push or pull request events but only for the "master" branch
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  unit_tests:
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+      - name: Set up JDK 18 with Adopt distribution
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '18'
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Set permissions for gradlew
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          chmod +x demo/gradlew
+
+      - name: Build Java application
+        run: |
+          cd demo
+          ./gradlew build
+
+      - name: List the contents of the build directory
+        run: ls -la demo/build/libs/
+
+  build_and_push:
+    needs: unit_tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Login to GitHub Packages Docker registry
+        run: echo "${{ secrets.Docker_Pat }}" | docker login docker.pkg.github.com -u JesperSchon --password-stdin
+
+      - name: Build Docker image
+        run: |
+          IMAGE_TAG=$(echo ${GITHUB_REF##*/} | tr '[:upper:]' '[:lower:]')
+          docker build -t docker.pkg.github.com/jesperschon/to-do-list-grupp-7/min-app:$IMAGE_TAG -f Dockerfile .
+
+      - name: Push Docker image to GitHub Packages
+        run: |
+          IMAGE_TAG=$(echo ${GITHUB_REF##*/} | tr '[:upper:]' '[:lower:]')
+          docker push docker.pkg.github.com/jesperschon/to-do-list-grupp-7/min-app:$IMAGE_TAG
+
+  fake_deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Fake Deploy to Test Environment
+        run: |
+          IMAGE_TAG=$(echo ${GITHUB_REF##*/} | tr '[:upper:]' '[:lower:]')
+          echo "Deploying image docker.pkg.github.com/jesperschon/to-do-list-grupp-7/min-app:$IMAGE_TAG"
+

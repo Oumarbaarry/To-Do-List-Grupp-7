@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task List</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Länka till din CSS-fil här -->
+</head>
+<body>
+
+<div class="container">
+    <h1>Tasks</h1>
+
+    <!-- Lista över uppgifter -->
+    <div class="tasks-list">
+        <div th:each="task : ${tasks}" class="task">
+            <div>
+                <strong th:text="${task.name}">Task Name</strong><br>
+                <span th:text="${task.description}">Description here...</span><br>
+                <span th:text="'Deadline: ' + ${task.deadline}">Deadline: Date here...</span>
+            </div>
+            <a th:href="@{/edit/{id}(id=${task.id})}" class="edit">Edit</a>
+            <form th:action="@{/delete/{id}(id=${task.id})}" method="post">
+                <button class="delete" type="submit">Delete</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Form för att lägga till ny uppgift -->
+    <form action="/add" method="post">
+        <label for="taskName">Task Name:</label>
+        <input type="text" id="taskName" name="name"><br><br>
+
+        <label for="taskDescription">Description:</label>
+        <textarea id="taskDescription" name="description"></textarea><br><br>
+
+        <label for="taskDeadline">Deadline:</label>
+        <input type="date" id="taskDeadline" name="deadline"><br><br>
+
+        <button class="add" type="submit">Add Task</button>
+    </form>
+</div>
+
+</body>
+</html>
+
