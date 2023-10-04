@@ -38,6 +38,13 @@ public class TestTask {
     task.setStatus(true);
     assert(task.getStatus() == true);
   }
+  @Test
+  public void testWrongName(){
+    Task task = new Task();
+    task.setName("name");
+    assert(task.getName().equals("wrongName"));
+  }
+
 
 
 }
