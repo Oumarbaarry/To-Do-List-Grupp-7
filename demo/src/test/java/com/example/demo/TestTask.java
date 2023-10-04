@@ -39,11 +39,12 @@ public class TestTask {
     assert(task.getStatus() == true);
   }
   @Test
-  public void testWrongName(){
+  public void testCorrectName(){
     Task task = new Task();
     task.setName("name");
-    assert(task.getName().equals("wrongName"));
+    assert(task.getName().equals("name"));
   }
+
 
 
 
